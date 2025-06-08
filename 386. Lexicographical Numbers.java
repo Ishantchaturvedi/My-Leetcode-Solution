@@ -1,19 +1,23 @@
+import java.util.*;
+
 class Solution {
     public List<Integer> lexicalOrder(int n) {
-        List<Integer> ans = new ArrayList<>();
-        int curr = 1;
+        List<Integer> result = new ArrayList<>();
+        int count = 1;
 
-        while (ans.size() < n) {
-            ans.add(curr);
-            if (curr * 10 <= n) {
-                curr *= 10;
+        for (int i = 0; i < n; i++) {
+            result.add(count);
+            if (count * 10 <= n) {
+                count *= 10;  // Move to next lexicographical level
             } else {
-                while (curr % 10 == 9 || curr == n)
-                    curr /= 10;
-                ++curr;
+                if (count >= n) count /= 10;  // Backtrack if needed
+                count++;
+                while (count % 10 == 0) {
+                    count /= 10;  // Skip trailing zeros
+                }
             }
         }
 
-        return ans;
+        return result;
     }
 }
