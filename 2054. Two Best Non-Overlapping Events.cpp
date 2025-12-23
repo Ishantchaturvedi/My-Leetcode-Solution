@@ -1,27 +1,40 @@
 class Solution {
 public:
-    using info=tuple<int, bool, int>;
-    static int maxTwoEvents(vector<vector<int>>& events) {
-        const int n=events.size();
-        vector<info> time(n*2);
-        for(int i=0; i<n; i++){
-            int s=events[i][0], e=events[i][1], v=events[i][2];
-            time[2*i]={s, 0, v};
-            time[2*i+1]={e, 1, v};
+    int maxTwoEvents(vector<vector<int>>& events) {
+        sort(events.begin(), events.end());
+
+        vector<vector<int>> endSorted = events;
+        sort(endSorted.begin(), endSorted.end(),
+             [](auto &a, auto &b) {
+                 return a[1] < b[1];
+             });
+
+        int n = events.size();
+        vector<int> maxValueTill(n);
+        
+        maxValueTill[0] = endSorted[0][2];
+        for (int i = 1; i < n; i++) {
+            maxValueTill[i] = max(maxValueTill[i - 1], endSorted[i][2]);
         }
-        sort(time.begin(), time.end());
-        int ans=0, maxV=0, n2=n*2;
-        for(auto& [t, isEnd, v]: time){
-            if (isEnd) maxV=max(maxV, v);
-            else ans=max(ans, maxV+v);
+
+        int ans = 0;
+        int j = 0;
+
+        for (int i = 0; i < n; i++) {
+            int start = events[i][0];
+            int value = events[i][2];
+
+            while (j < n && endSorted[j][1] < start) {
+                j++;
+            }
+
+            ans = max(ans, value);
+
+            if (j > 0) {
+                ans = max(ans, value + maxValueTill[j - 1]);
+            }
         }
-        return ans;    
+
+        return ans;
     }
 };
-
-auto init = []() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
-    return 'c';
-}();
